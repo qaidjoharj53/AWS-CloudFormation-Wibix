@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Creates a ReadOnly role for EC2, S3, and other AWS resources"
+
+Parameters:
+    RoleName:
+        Type: String
+        Default: WibixReadOnlyRole
+        Description: Name of the IAM role to be created
+
+Resources:
+    ReadOnlyRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: !Ref RoleName
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    - Effect: Allow
+                      Principal:
+                          Service:
+                              - ec2.amazonaws.com
+                      Action:
+                          - "sts:AssumeRole"
+            ManagedPolicyArns:
+                - "arn:aws:iam::aws:policy/ReadOnlyAccess"
+                - "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+                - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+
+Outputs:
+    RoleARN:
+        Description: "ARN of the created ReadOnly role"
+        Value: !GetAtt ReadOnlyRole.Arn
+        Export:
+            Name: WibixReadOnlyRoleARN
